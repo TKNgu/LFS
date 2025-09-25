@@ -1,6 +1,17 @@
 #!/bin/bash
 
-export BASE=$PWD
-export LFS=$BASE/root
-export SOURCE_FOLDER=$BASE/source
-export TMP=$BASE/tmp
+set +h
+umask 022
+LFS=$PWD/lfs
+LC_ALL=POSIX
+LFS_TGT=$(uname -m)-lfs-linux-gnu
+PATH=/usr/bin
+if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
+PATH=$LFS/tools/bin:$PATH
+CONFIG_SITE=$LFS/usr/share/config.site
+export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
+export MAKEFLAGS=-j$(($(nproc) - 1))
+
+export SOURCE_FOLDER=$LFS/sources
+export TMP=$LFS/tmp
+mkdir -v $TMP
