@@ -3,7 +3,7 @@
 if [ -n "$SOURCE_FOLDER" ]; then
     echo "Source $SOURCE_FOLDER"
 else
-    SOURCE_FOLDER="source"
+    SOURCE_FOLDER=$1
     mkdir -p $SOURCE_FOLDER
     echo "Default $SOURCE_FOLDER"
 fi 
@@ -12,11 +12,23 @@ download_source() {
     packet_name=$1
     packet_url=$2
     packet_md5=$3
+    mirror_url=$4
+
+    if [ -z $mirror_url ]; then
+        name_only=${packet_name%-*}
+        mirror_url="https://ftp.kaist.ac.kr/gnu/$name_only/$packet_name \
+            https://ftp.jaist.ac.jp/pub/GNU/$name_only/$packet_name \
+            https://mirrors.tuna.tsinghua.edu.cn/gnu/$name_only/$packet_name \
+            https://mirrors.nju.edu.cn/gnu/$name_only/$packet_name \
+            https://mirror.dogado.de/gnu/$name_only/$packet_name"
+    fi
 
     if [ -f $SOURCE_FOLDER/$packet_name ]; then
         echo "Skip file $packet_name"
     else
-        aria2c -x 4 -s 4 -d $SOURCE_FOLDER -o $packet_name $packet_url
+        echo "Download $packet_url"
+        echo "Mirror $mirror_url"
+        aria2c -x 4 -s 4 -d $SOURCE_FOLDER -o $packet_name $mirror_url $packet_url
         if [ "$(md5sum $SOURCE_FOLDER/$packet_name | awk '{print $1}')" = $packet_md5 ]; then
             echo "MD5 success."
         else
@@ -36,11 +48,11 @@ download_source attr-2.5.2.tar.gz \
 
 download_source autoconf-2.72.tar.xz \
     https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz \
-    1be79f7106ab6767f18391c5e22be701
+    1be79f7106ab6767f18391c5e22be701 
 
 download_source automake-1.18.1.tar.xz \
     https://ftp.gnu.org/gnu/automake/automake-1.18.1.tar.xz \
-    cea31dbf1120f890cbf2a3032cfb9a68
+    cea31dbf1120f890cbf2a3032cfb9a68 
 
 download_source bash-5.3.tar.gz \
     https://ftp.gnu.org/gnu/bash/bash-5.3.tar.gz \
@@ -112,7 +124,8 @@ download_source gawk-5.3.2.tar.xz \
 
 download_source gcc-15.2.0.tar.xz \
     https://ftp.gnu.org/gnu/gcc/gcc-15.2.0/gcc-15.2.0.tar.xz \
-    b861b092bf1af683c46a8aa2e689a6fd
+    b861b092bf1af683c46a8aa2e689a6fd \
+    https://mirror.koddos.net/gcc/releases/gcc-15.2.0/gcc-15.2.0.tar.xz
 
 download_source gdbm-1.26.tar.gz \
     https://ftp.gnu.org/gnu/gdbm/gdbm-1.26.tar.gz \

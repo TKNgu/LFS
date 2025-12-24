@@ -14,4 +14,4 @@ export MAKEFLAGS=-j$(($(nproc) - 1))
 
 export SOURCE_FOLDER=$LFS/sources
 export TMP=$LFS/tmp
-mkdir -v $TMP
+mkdir -pv $TMP
